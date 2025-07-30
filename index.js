@@ -69,3 +69,9 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
+// 在 index.js 最底下加上這段 "保命" 用的 server
+const express = require('express');
+const app = express();
+app.get('/', (req, res) => res.send('Bot is running.'));
+app.listen(process.env.PORT || 3000);
