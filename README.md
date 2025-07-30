@@ -15,11 +15,9 @@ CLIENT_ID=[YOUR BOT CLIENT ID]
 
 ----------------------------
 
-powershell>
-
-npm install discord.js dotenv
-
 註冊/slash指令
+
+powershell>
 
 npm install discord.js @discordjs/rest discord-api-types
 
