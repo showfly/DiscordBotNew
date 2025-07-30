@@ -17,10 +17,13 @@ const client = new Client({
   ],
 });
 
-// client.once(Events.ClientReady, () => {
-//   console.log(`✅ Bot 登入成功：${client.user.tag}`);
-// });
+client.once(Events.ClientReady, () => {
+  console.log(`✅ Bot 登入成功：${client.user.tag}`);
+});
 
+client.login(process.env.DISCORD_TOKEN).catch(err => {
+  console.error('❌ Bot login 失敗：', err);
+});
 // client.on(Events.MessageCreate, async (message) => {
 //   if (message.content === '!setup') {
 //     const sent = await message.channel.send(
@@ -42,10 +45,8 @@ client.on(Events.InteractionCreate, async interaction => {
       await sent.react('🎵');
   
       // await interaction.reply({ content: '✅ 角色訊息已送出！', ephemeral: true });
-      await interaction.reply({
-        content: '✅ 角色訊息已送出！',
-        flags: InteractionResponseFlags.Ephemeral,
-      });
+      await interaction.deferReply({ ephemeral: true });
+      await interaction.editReply({ content: '✅ 角色訊息已送出！' });
     }
 });
 
