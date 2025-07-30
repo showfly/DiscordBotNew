@@ -16,18 +16,32 @@ const client = new Client({
   ],
 });
 
-client.once(Events.ClientReady, () => {
-  console.log(`✅ Bot 登入成功：${client.user.tag}`);
-});
+// client.once(Events.ClientReady, () => {
+//   console.log(`✅ Bot 登入成功：${client.user.tag}`);
+// });
 
-client.on(Events.MessageCreate, async (message) => {
-  if (message.content === '!setup') {
-    const sent = await message.channel.send(
-      '🎮 點選以下表情來取得遊戲身分組：\n🐉 龍族\n🎵 鳴潮'
-    );
-    await sent.react('🐉');
-    await sent.react('🎵');
-  }
+// client.on(Events.MessageCreate, async (message) => {
+//   if (message.content === '!setup') {
+//     const sent = await message.channel.send(
+//       '🎮 點選以下表情來取得遊戲身分組：\n🐉 龍族幻想\n🎵 鳴潮'
+//     );
+//     await sent.react('🐉');
+//     await sent.react('🎵');
+//   }
+// });
+
+client.on(Events.InteractionCreate, async interaction => {
+    if (!interaction.isChatInputCommand()) return;
+  
+    if (interaction.commandName === 'rofox_role') {
+      const sent = await interaction.channel.send(
+        '🎮 點選以下表情來取得遊戲身分組：\n🐉 龍族幻想\n🎵 鳴潮'
+      );
+      await sent.react('🐉');
+      await sent.react('🎵');
+  
+      await interaction.reply({ content: '✅ 角色訊息已送出！', ephemeral: true });
+    }
 });
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
@@ -39,7 +53,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   const member = await reaction.message.guild.members.fetch(user.id);
 
   if (reaction.emoji.name === '🐉') {
-    const role = reaction.message.guild.roles.cache.find((r) => r.name === '龍族');
+    const role = reaction.message.guild.roles.cache.find((r) => r.name === '龍族幻想');
     if (role) await member.roles.add(role);
   }
 
@@ -58,7 +72,7 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   const member = await reaction.message.guild.members.fetch(user.id);
 
   if (reaction.emoji.name === '🐉') {
-    const role = reaction.message.guild.roles.cache.find((r) => r.name === '龍族');
+    const role = reaction.message.guild.roles.cache.find((r) => r.name === '龍族幻想');
     if (role) await member.roles.remove(role);
   }
 
@@ -67,6 +81,7 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
     if (role) await member.roles.remove(role);
   }
 });
+
 
 client.login(process.env.DISCORD_TOKEN);
 
