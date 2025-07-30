@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
+const { InteractionResponseFlags } = require('discord.js');
 
 const client = new Client({
   intents: [
@@ -40,7 +41,11 @@ client.on(Events.InteractionCreate, async interaction => {
       await sent.react('🐉');
       await sent.react('🎵');
   
-      await interaction.reply({ content: '✅ 角色訊息已送出！', ephemeral: true });
+      // await interaction.reply({ content: '✅ 角色訊息已送出！', ephemeral: true });
+      await interaction.reply({
+        content: '✅ 角色訊息已送出！',
+        flags: InteractionResponseFlags.Ephemeral,
+      });
     }
 });
 
