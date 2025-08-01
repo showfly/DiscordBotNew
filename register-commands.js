@@ -13,6 +13,7 @@ const commands = [
   new SlashCommandBuilder()
     .setName('rofox_role')
     .setDescription('選擇遊戲身分組') // 另一個指令（你有的）
+    .setDefaultMemberPermissions()  // ❌ 不加代表所有人都能用
     .toJSON(),
 
   // 👉 若你還有其他指令，可依樣新增更多 .setName(...)
