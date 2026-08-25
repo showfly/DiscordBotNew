@@ -1,7 +1,4 @@
-const js = require('@eslint/js');
-
 module.exports = [
-  js.configs.recommended,
   {
     files: ['**/*.js'],
     ignores: ['node_modules/**'],
@@ -20,6 +17,7 @@ module.exports = [
       },
     },
     rules: {
+      'no-undef': 'error',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
