@@ -1,7 +1,8 @@
 require('dotenv').config();
 const fs = require('fs');
-const path = require('path');
 const { Client, GatewayIntentBits, Partials, Collection, Events } = require('discord.js');
+const features = require('./config/features');
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -17,6 +18,8 @@ const client = new Client({
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands');
 for (const file of commandFiles) {
+  if (!features.gameRoles && file === 'rofox_role.js') continue;
+
   const command = require(`./commands/${file}`);
   client.commands.set(command.data.name, command);
 }
@@ -33,7 +36,6 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({ content: '⚠️ 發生錯誤！', ephemeral: true });
     }
   } else if (interaction.isStringSelectMenu()) {
-    // 自動載入對應的互動處理
     const handlerPath = `./interactions/${interaction.customId}.js`;
     if (fs.existsSync(handlerPath)) {
       const handler = require(handlerPath);
@@ -42,11 +44,12 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 
-// 表情事件註冊（加/移除）
-client.on(Events.MessageReactionAdd, require('./events/messageReactionAdd'));
-client.on(Events.MessageReactionRemove, require('./events/messageReactionRemove'));
+// 遊戲身分組功能目前暫停；保留程式碼方便日後重新啟用
+if (features.gameRoles) {
+  client.on(Events.MessageReactionAdd, require('./events/messageReactionAdd'));
+  client.on(Events.MessageReactionRemove, require('./events/messageReactionRemove'));
+}
 
-// Bot 登入
 client.login(process.env.DISCORD_TOKEN);
 
 // Express 保活
