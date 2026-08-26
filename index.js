@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const { Client, GatewayIntentBits, Partials, Collection, Events } = require('discord.js');
 const features = require('./config/features');
+const syncColorRoles = require('./utils/syncColorRoles');
 
 const client = new Client({
   intents: [
@@ -33,7 +34,12 @@ client.on(Events.InteractionCreate, async interaction => {
       await command.execute(interaction);
     } catch (err) {
       console.error(err);
-      await interaction.reply({ content: '⚠️ 發生錯誤！', ephemeral: true });
+      const errorReply = { content: '⚠️ 發生錯誤！', ephemeral: true };
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply(errorReply).catch(console.error);
+      } else {
+        await interaction.reply(errorReply).catch(console.error);
+      }
     }
   } else if (interaction.isStringSelectMenu()) {
     const handlerPath = `./interactions/${interaction.customId}.js`;
@@ -49,6 +55,24 @@ if (features.gameRoles) {
   client.on(Events.MessageReactionAdd, require('./events/messageReactionAdd'));
   client.on(Events.MessageReactionRemove, require('./events/messageReactionRemove'));
 }
+
+// Bot 啟動後，替目前已加入的所有 Server 補齊顏色身分組
+client.once(Events.ClientReady, async readyClient => {
+  console.log(`✅ ${readyClient.user.tag} 已登入`);
+
+  if (!features.colorRoles) return;
+
+  for (const guild of readyClient.guilds.cache.values()) {
+    await syncColorRoles(guild);
+  }
+});
+
+// Bot 被加入新的 Server 時，自動建立缺少的顏色身分組
+client.on(Events.GuildCreate, async guild => {
+  if (features.colorRoles) {
+    await syncColorRoles(guild);
+  }
+});
 
 client.login(process.env.DISCORD_TOKEN);
 

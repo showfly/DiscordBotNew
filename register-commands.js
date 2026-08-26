@@ -1,14 +1,23 @@
 // register-commands.js
 require('dotenv').config();
-const { REST, Routes, SlashCommandBuilder } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const features = require('./config/features');
 
-const commands = [
-  new SlashCommandBuilder()
-    .setName('rofox_color')
-    .setDescription('選擇顏色身分組')
-    .toJSON(),
-];
+const commands = [];
+
+if (features.colorRoles) {
+  commands.push(
+    new SlashCommandBuilder()
+      .setName('rofox_color')
+      .setDescription('選擇顏色身分組')
+      .toJSON(),
+    new SlashCommandBuilder()
+      .setName('color_setup')
+      .setDescription('同步名字顏色身分組')
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+      .toJSON(),
+  );
+}
 
 if (features.gameRoles) {
   commands.push(
